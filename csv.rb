@@ -6,10 +6,6 @@ class Person
 
   attr_reader :last_name, :first_name, :gender, :favorite_color, :birth_date, :birth_date_presort
 
-  def self.all_people
-    @@array
-  end
-
   def initialize(args)
     @last_name = args[:last_name]
     @first_name = args[:first_name]
@@ -46,6 +42,10 @@ class Person
     month = "0" + month if month.length == 1
     day = "0" + day if day.length == 1
     year + month + day
+  end
+
+  def self.all_people
+    @@array
   end
 
   def self.display_all
