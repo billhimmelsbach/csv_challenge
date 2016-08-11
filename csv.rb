@@ -1,7 +1,10 @@
+#a csv parser which requires no additional ruby modules(CSV, DateTime, etc) or gems
+#standard ruby only
+
 class People
   @@array = Array.new
 
-  attr_reader :last_name, :first_name, :gender, :favorite_color, :birth_date
+  attr_reader :last_name, :first_name, :gender, :favorite_color, :birth_date, :birth_date_presort
 
   def self.all_people
     @@array
@@ -13,6 +16,7 @@ class People
     @gender = gender_parse(args[:gender])
     @favorite_color = args[:favorite_color]
     @birth_date = birth_date_parse(args[:birth_date])
+    @birth_date_presort = date_parser(@birth_date)
     @@array << self
   end
 
@@ -34,21 +38,35 @@ class People
     end
   end
 
+  def date_parser (birth_date)
+    return birth_date.match(/\d{4}$/)[0]
+  end
+
   def self.list_all
     People.all_people.each do |person|
       p "#{person.last_name} #{person.first_name} #{person.gender} #{person.birth_date} #{person.favorite_color}"
     end
   end
-  def self.sort_by_gender_and_display
-    # p People.all_people
-    People.all_people.sort_by!{|item| item.last_name}
-    p "AFTER"
-    # p People.all_people
+
+  def self.sort_by_gender_ascending_and_display
+    People.all_people.sort_by!{|person| [person.gender, person.last_name]}
+    p "Display 1"
     People.list_all
-    #  @friends.sort{|a,b| a['name']<=>b['name']}
-    #  tasks.sort_by{ |t| t.due_date }
-    # People.all_people.each do |person|
-    # p "#{person.last_name} #{person.first_name} #{person.gender} #{person.birth_date} #{person.favorite_color}"
+    puts
+  end
+
+  def self.sort_by_date_ascending_and_display
+    People.all_people.sort_by!{|person| [person.birth_date_presort, person.last_name]}
+    p "Display 2"
+    People.list_all
+    puts
+  end
+
+  def self.sort_by_last_name_descending_and_display
+    People.all_people.sort_by!{|person| [person.last_name]}.reverse!
+    p "Display 3"
+    People.list_all
+    puts
   end
 end
 
@@ -63,7 +81,7 @@ end
 
 #configuration = (headers, delimiter, file_path)
 def hashIt (configuration)
-  new_data_arr =[]
+  final_data_array =[]
   headers = configuration[0]
   delimiter = configuration[1]
   file_path = configuration[2]
@@ -75,18 +93,17 @@ def hashIt (configuration)
         hsh[header] = row[current_column_index]
         current_column_index += 1
      end
-     new_data_arr.push(hsh)
+     final_data_array.push(hsh)
   end
-  return new_data_arr
+  return final_data_array
 end
 
 parse_configurations = [
-#headers, delimeter, file_path
-#comma
+#comma; format = [headers, delimeter, file_path]
 [[:last_name, :first_name, :gender, :favorite_color, :birth_date], ",", "sample/comma.txt"],
-#space
+#space; format = [headers, delimeter, file_path]
 [[:last_name, :first_name, :middle_initial, :gender, :birth_date, :favorite_color], " ", "sample/space.txt"],
-#pipe
+#pipe; format = [headers, delimeter, file_path]
 [[:last_name, :first_name, :middle_initial, :gender, :favorite_color, :birth_date], "|", "sample/pipe.txt"]
 ]
 
@@ -99,8 +116,8 @@ parse_configurations.each do |configuration|
       People.new(data)
   end
 end
-# parsed_and_hashed_data = hashIt([:last_name, :first_name, :middle_initial, :gender, :birth_date, :favorite_color], " ", "sample/space.txt")
-
 
 # People.list_all
-People.sort_by_gender_and_display
+People.sort_by_gender_ascending_and_display
+People.sort_by_date_ascending_and_display
+People.sort_by_last_name_descending_and_display
