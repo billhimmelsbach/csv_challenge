@@ -34,12 +34,12 @@ class People
     if birth_date.match(/-/)
       return birth_date.gsub("-", "/")
     else
-      return birth_date
+      birth_date
     end
   end
 
   def date_parser (birth_date)
-    return birth_date.match(/\d{4}$/)[0]
+    birth_date.match(/\d{4}$/)[0] + birth_date.match(/\/(\d\d?)\//).captures[0] + birth_date.match(/^\d\d?/)[0]
   end
 
   def self.list_all
