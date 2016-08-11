@@ -17,6 +17,7 @@ class People
     @favorite_color = args[:favorite_color]
     @birth_date = birth_date_parse(args[:birth_date])
     @birth_date_presort = date_parser(@birth_date)
+    p @birth_date_presort
     @@array << self
   end
 
@@ -39,7 +40,12 @@ class People
   end
 
   def date_parser (birth_date)
-    birth_date.match(/\d{4}$/)[0] + birth_date.match(/\/(\d\d?)\//).captures[0] + birth_date.match(/^\d\d?/)[0]
+    year = birth_date.match(/\d{4}$/)[0]
+    month = birth_date.match(/^\d\d?/)[0]
+    day = birth_date.match(/\/(\d\d?)\//).captures[0]
+    month = "0" + month if month.length == 1
+    day = "0" + day if day.length == 1
+    year + month + day
   end
 
   def self.list_all
