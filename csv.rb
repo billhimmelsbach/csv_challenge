@@ -1,27 +1,3 @@
-# after the function has completed, the copy gets dumped
-def parseData (file, delimiter)
-  # each would just go through and do a thing, map creates a copy of the array that readlines creates, then the function returns that copy
-  File.readlines(file).map do |line|
-     line.chomp.split(delimiter).map{|item| item.gsub(/\s/, "")}
-  end
-end
-
-new_data_arr =[]
-def hashIt (headers, delimiter, file_path)
-  new_data_arr = []
-  parsedData = parseData(file_path, delimiter)
-  parsedData.each do |row|
-     hsh = {}
-     current_column_index = 0
-     headers.each do |header|
-        hsh[header] = row[current_column_index]
-        current_column_index += 1
-     end
-     new_data_arr.push(hsh)
-  end
-  return new_data_arr
-end
-
 class People
   @@array = Array.new
 
@@ -63,150 +39,59 @@ class People
       p "#{person.last_name} #{person.first_name} #{person.gender} #{person.birth_date} #{person.favorite_color}"
     end
   end
-  # def print
-  #   self.name + " "
-  #
-  # end
-
+  def sort_by_gender_and_display
+    People.all_people.sort_by
+  end
 end
 
-parsed_and_hashed_data = hashIt([:last_name, :first_name, :middle_initial, :gender, :birth_date, :favorite_color], " ", "sample/space.txt")
-parsed_and_hashed_data.each do |data|
-#   # p data
-  People.new(data)
+
+# after the function has completed, the copy gets dumped
+def parseData (file, delimiter)
+  # each would just go through and do a thing, map creates a copy of the array that readlines creates, then the function returns that copy
+  File.readlines(file).map do |line|
+     line.chomp.split(delimiter).map{|item| item.gsub(/\s/, "")}
+  end
 end
+
+#configuration = (headers, delimiter, file_path)
+def hashIt (configuration)
+  new_data_arr =[]
+  headers = configuration[0]
+  delimiter = configuration[1]
+  file_path = configuration[2]
+  parsedData = parseData(file_path, delimiter)
+  parsedData.each do |row|
+     hsh = {}
+     current_column_index = 0
+     headers.each do |header|
+        hsh[header] = row[current_column_index]
+        current_column_index += 1
+     end
+     new_data_arr.push(hsh)
+  end
+  return new_data_arr
+end
+
+parse_configurations = [
+#headers, delimeter, file_path
+#comma
+[[:last_name, :first_name, :gender, :favorite_color, :birth_date], ",", "sample/comma.txt"],
+#space
+[[:last_name, :first_name, :middle_initial, :gender, :birth_date, :favorite_color], " ", "sample/space.txt"],
+#pipe
+[[:last_name, :first_name, :middle_initial, :gender, :favorite_color, :birth_date], "|", "sample/pipe.txt"]
+]
+
+parsed_data_array =[]
+parse_configurations.each do |configuration|
+  parsed_and_hashed_data = hashIt(configuration)
+  parsed_and_hashed_data
+  parsed_and_hashed_data.each do |data|
+      data
+      People.new(data)
+  end
+end
+# parsed_and_hashed_data = hashIt([:last_name, :first_name, :middle_initial, :gender, :birth_date, :favorite_color], " ", "sample/space.txt")
+
 
 People.list_all
-
-# People.all_people.each do |person|
-#   p "WHAT"
-#   p "#{person.last_name} #{person.first_name} #{person.gender} #{person.birth_date} #{person.favorite_color}"
-# end
-# p "ALL CLASSES"
-# p People.all_people
-# People.all_people.each do |person|
-# p "#{person.last_name} #{person.first_name} #{person.gender} #{person.birth_date} #{person.favorite_color}"
-# end
-
-
-# p new_data_arr
-
-# headers = [last_name, first_name, gender, favorite_color, birth_date]
-# delimiter = ","
-# file_name = "sample/comma.txt"
-# # space
-# headers = [last_name, first_name, middle_initial, gender, birth_date, favorite_color]
-# delimiter = " "
-# file_name = "sample/space.txt"
-# # pipe
-# headers = [last_name, first_name, middle_initial, gender, favorite_color, birth_date]
-# delimiter = "|"
-# file_name = "sample/pipe.txt"
-
-# str = "hello"
-# str1 = str
-# str1.gsub! "hello", "whoa!"
-# puts str1 #=> whoa
-# puts str #=> whoa
-
-# array = ["123"]
-# array = array.split('') #the right side of the function points to the original, then the left is a new copy created, that will be the new reference
-
-
-
-# def testByReference
-
-# def parseData (file, delimiter)
-#   #I'm going to take the file, and at each line break, I'm going to assign some space in the memorory for each line, I'm going to do something to each of the reserved spaces in memory called "lines"
-#   File.readlines(file).each do |line|
-#      line.chomp! #edits line by reference, actually change the memory block your're given
-#      line = line.chomp #creates a new instance of line, creates a new memory block copy with the modification
-#      line.split(delimiter).map{|item| item.gsub(/\s/, "")}
-#   end
-# end
-
-# p parseData("sample/comma.txt", ",")
-  #
-  # def parseData (file, delimiter)
-  #   array = []
-  #   File.readlines(file).each do |line|
-  #     #  line.chomp!
-  #      line = line.split(delimiter)
-  #      line.map!{|item| item.gsub(/\s/, "")}
-  #      array << line
-  #   end
-  #   array
-  # end
-  #
-
-
-
-
-  #
-  # def parseCommaData
-  #   array = []
-  #   File.readlines("sample/comma.txt").each do |line|
-  #      line = line.split(",")
-  #      line.map!{|item| item.gsub(/\s/, "")}
-  #      array << line
-  #   end
-  # end
-  # p parseCommaData
-  # #
-  # def parsePipeData
-  #   array = []
-  #   File.readlines("sample/pipe.txt").each do |line|
-  #      line = line.split("|")
-  #      line.map!{|item| item.gsub(/\s/, "")}
-  #      array << line
-  #   end
-  # end
-  # parsePipeData
-  # #
-  # def parseSpaceData
-  #   array = []
-  #   File.readlines("sample/space.txt").each do |line|
-  #      line = line.split(" ")
-  #      line.map!{|item| item.gsub(/\s/, "")}
-  #      array << line
-  #   end
-  # end
-  #
-  # parseSpaceData
-
-  # class Comma
-  #   def parseData
-  #     array = []
-  #     File.readlines("sample/comma.txt").each do |line|
-  #        puts line
-  #        puts "SPLIT"
-  #        line = line.split(", ")
-  #        puts line
-  #        array << line
-  #     end
-  #     p "ARRAY"
-  #     print array
-  #     array
-  #   end
-  #   parseData()
-  #   parseData = parseData
-  #   p parseData
-  #   # attr_reader :theme, :guesses
-  #   def initialize(parseData)
-  #     @last_name = parseData[0]
-  #   end
-  # end
-  #
-  # commaData = Comma.new(0)
-  # p commaData
-  #
-  # array = []
-  # File.readlines("sample/comma.txt").each do |line|
-  #    puts line
-  #    puts "SPLIT"
-  #    line = line.split(", ")
-  #    puts line
-  #    array << line
-  # end
-  # p "ARRAY"
-  # print array
