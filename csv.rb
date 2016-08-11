@@ -17,7 +17,6 @@ class People
     @favorite_color = args[:favorite_color]
     @birth_date = birth_date_parse(args[:birth_date])
     @birth_date_presort = date_parser(@birth_date)
-    p @birth_date_presort
     @@array << self
   end
 
@@ -56,21 +55,21 @@ class People
 
   def self.sort_by_gender_ascending_and_display
     People.all_people.sort_by!{|person| [person.gender, person.last_name]}
-    p "Display 1"
+    p "Output 1"
     People.list_all
     puts
   end
 
   def self.sort_by_date_ascending_and_display
     People.all_people.sort_by!{|person| [person.birth_date_presort, person.last_name]}
-    p "Display 2"
+    p "Output 2"
     People.list_all
     puts
   end
 
   def self.sort_by_last_name_descending_and_display
     People.all_people.sort_by!{|person| [person.last_name]}.reverse!
-    p "Display 3"
+    p "Output 3"
     People.list_all
     puts
   end
