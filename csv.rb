@@ -1,7 +1,7 @@
-#a csv parser which requires no additional ruby modules(CSV, DateTime, etc) or gems
-#standard ruby only
+#a csv parser which requires no additional ruby libraries(CSV, DateTime, etc) or gems.
+#parses data from files, puts data into person classes, displays data according to spec
 
-class People
+class Person
   @@array = Array.new
 
   attr_reader :last_name, :first_name, :gender, :favorite_color, :birth_date, :birth_date_presort
@@ -16,7 +16,7 @@ class People
     @gender = gender_parse(args[:gender])
     @favorite_color = args[:favorite_color]
     @birth_date = birth_date_parse(args[:birth_date])
-    @birth_date_presort = date_parser(@birth_date)
+    @birth_date_presort = birth_date_presorter(@birth_date)
     @@array << self
   end
 
@@ -38,7 +38,8 @@ class People
     end
   end
 
-  def date_parser (birth_date)
+#parses birth_date into a string that can later be sorted by date
+  def birth_date_presorter (birth_date)
     year = birth_date.match(/\d{4}$/)[0]
     month = birth_date.match(/^\d\d?/)[0]
     day = birth_date.match(/\/(\d\d?)\//).captures[0]
@@ -47,63 +48,59 @@ class People
     year + month + day
   end
 
-  def self.list_all
-    People.all_people.each do |person|
+  def self.display_all
+    Person.all_people.each do |person|
       p "#{person.last_name} #{person.first_name} #{person.gender} #{person.birth_date} #{person.favorite_color}"
     end
   end
 
   def self.sort_by_gender_ascending_and_display
-    People.all_people.sort_by!{|person| [person.gender, person.last_name]}
+    Person.all_people.sort_by!{|person| [person.gender, person.last_name]}
     p "Output 1"
-    People.list_all
+    Person.display_all
     puts
   end
 
   def self.sort_by_date_ascending_and_display
-    People.all_people.sort_by!{|person| [person.birth_date_presort, person.last_name]}
+    Person.all_people.sort_by!{|person| [person.birth_date_presort, person.last_name]}
     p "Output 2"
-    People.list_all
+    Person.display_all
     puts
   end
 
   def self.sort_by_last_name_descending_and_display
-    People.all_people.sort_by!{|person| [person.last_name]}.reverse!
+    Person.all_people.sort_by!{|person| [person.last_name]}.reverse!
     p "Output 3"
-    People.list_all
+    Person.display_all
     puts
   end
 end
 
-
-# after the function has completed, the copy gets dumped
-def parseData (file, delimiter)
-  # each would just go through and do a thing, map creates a copy of the array that readlines creates, then the function returns that copy
+def open_files_and_parse_data (file, delimiter)
   File.readlines(file).map do |line|
      line.chomp.split(delimiter).map{|item| item.gsub(/\s/, "")}
   end
 end
 
-#configuration = (headers, delimiter, file_path)
-def hashIt (configuration)
-  final_data_array =[]
+def convert_strings_to_hashes (configuration) #configuration = (headers, delimiter, file_path)
+  final_hashed_data_array =[]
   headers = configuration[0]
   delimiter = configuration[1]
   file_path = configuration[2]
-  parsedData = parseData(file_path, delimiter)
-  parsedData.each do |row|
-     hsh = {}
+  parsed_data = open_files_and_parse_data(file_path, delimiter)
+  parsed_data.each do |line|
+     hash = {}
      current_column_index = 0
      headers.each do |header|
-        hsh[header] = row[current_column_index]
+        hash[header] = line[current_column_index]
         current_column_index += 1
      end
-     final_data_array.push(hsh)
+     final_hashed_data_array.push(hash)
   end
-  return final_data_array
+  final_hashed_data_array
 end
 
-parse_configurations = [
+PARSE_CONFIGURATIONS = [
 #comma; format = [headers, delimeter, file_path]
 [[:last_name, :first_name, :gender, :favorite_color, :birth_date], ",", "sample/comma.txt"],
 #space; format = [headers, delimeter, file_path]
@@ -112,17 +109,17 @@ parse_configurations = [
 [[:last_name, :first_name, :middle_initial, :gender, :favorite_color, :birth_date], "|", "sample/pipe.txt"]
 ]
 
-parsed_data_array =[]
-parse_configurations.each do |configuration|
-  parsed_and_hashed_data = hashIt(configuration)
-  parsed_and_hashed_data
-  parsed_and_hashed_data.each do |data|
-      data
-      People.new(data)
+def parse_files
+  PARSE_CONFIGURATIONS.each do |configuration|
+    parsed_and_hashed_data = convert_strings_to_hashes(configuration)
+    parsed_and_hashed_data.each do |data|
+        Person.new(data)
+    end
   end
 end
 
-# People.list_all
-People.sort_by_gender_ascending_and_display
-People.sort_by_date_ascending_and_display
-People.sort_by_last_name_descending_and_display
+#parses data from files, puts data into person classes, displays data according to spec
+parse_files
+Person.sort_by_gender_ascending_and_display
+Person.sort_by_date_ascending_and_display
+Person.sort_by_last_name_descending_and_display
