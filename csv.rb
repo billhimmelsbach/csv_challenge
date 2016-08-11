@@ -39,8 +39,16 @@ class People
       p "#{person.last_name} #{person.first_name} #{person.gender} #{person.birth_date} #{person.favorite_color}"
     end
   end
-  def sort_by_gender_and_display
-    People.all_people.sort_by
+  def self.sort_by_gender_and_display
+    # p People.all_people
+    People.all_people.sort_by!{|item| item.last_name}
+    p "AFTER"
+    # p People.all_people
+    People.list_all
+    #  @friends.sort{|a,b| a['name']<=>b['name']}
+    #  tasks.sort_by{ |t| t.due_date }
+    # People.all_people.each do |person|
+    # p "#{person.last_name} #{person.first_name} #{person.gender} #{person.birth_date} #{person.favorite_color}"
   end
 end
 
@@ -94,4 +102,5 @@ end
 # parsed_and_hashed_data = hashIt([:last_name, :first_name, :middle_initial, :gender, :birth_date, :favorite_color], " ", "sample/space.txt")
 
 
-People.list_all
+# People.list_all
+People.sort_by_gender_and_display
