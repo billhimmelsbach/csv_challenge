@@ -5,6 +5,7 @@ def parseData (file, delimiter)
      line.chomp.split(delimiter).map{|item| item.gsub(/\s/, "")}
   end
 end
+
 new_data_arr =[]
 def hashIt (headers, delimiter, file_path)
   new_data_arr = []
@@ -21,12 +22,55 @@ def hashIt (headers, delimiter, file_path)
   return new_data_arr
 end
 
-parsed_and_hashed_data = hashIt(["last_name", "first_name", "gender", "favorite_color", "birth_date"], ",", "sample/comma.txt")
+class People
+  attr_reader :last_name, :first_name, :gender, :favorite_color, :birth_date
+  def initialize(args)
+    @last_name = args[:last_name]
+    @first_name = args[:first_name]
+    @gender = gender_parse(args[:gender])
+    @favorite_color = args[:favorite_color]
+    @birth_date = birth_date_parse(args[:birth_date])
+  end
+
+    def gender_parse(gender)
+      if gender == "F"
+        return "Female"
+      elsif gender == "M"
+        return "Male"
+      else
+        gender
+      end
+    end
+
+    def birth_date_parse(birth_date)
+      if birth_date.match(/-/)
+        return birth_date.gsub("-", "/")
+      else
+        return birth_date
+      end
+    end
+
+
+  def self.all
+    p self.all
+  end
+end
+
+parsed_and_hashed_data = hashIt([:last_name, :first_name, :middle_initial, :gender, :birth_date, :favorite_color], " ", "sample/space.txt")
 # print "\n TEST TEST TEST"
 # print parsed_and_hashed_data
-
-class People
+parsed_and_hashed_data.each do |data|
+  # p data
+  p People.new(data)
 end
+#
+# def self.all
+# p People.all
+
+# def self.all
+
+
+
 
 # p new_data_arr
 # headers = [last_name, first_name, gender, favorite_color, birth_date]
